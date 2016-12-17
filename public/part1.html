@@ -23,9 +23,9 @@
 
 		function preload() {
 
-			game.load.image('player', 'assets/star.png');
-			game.load.image('star', 'assets/star.png');
-			game.load.image('baddie', 'assets/sprites/space-baddie.png');
+			game.load.image('player', 'assets/car.png');
+			game.load.image('star', 'assets/car.png');
+			game.load.image('bg', 'assets/background.png');
 			game.load.atlas('lazer', 'assets/games/defender/laser.png', 'assets/games/defender/laser.json');
 
 		}
@@ -37,16 +37,16 @@
 		var player;
 		var cursors;
 		var fireButton;
-		var bulletTime = 0;
+		var background;
 		var frameTime = 0;
 		var frames;
-		var prevCamX = 0;
 		var floor1, floor2, floor3;
 		var line1;
 
 		function create() {
 
 			game.world.setBounds(0, 0, 800, 600);
+			background = game.add.sprite(0, 0, 'bg');
 
 			frames = Phaser.Animation.generateFrameNames('frame', 2, 30, '', 2);
 			frames.unshift('frame02');
@@ -57,7 +57,7 @@
 			stars2 = game.add.group();
 			gen2();
 
-			player = game.add.sprite(400, 600, 'player');
+			player = game.add.sprite(370, 600, 'player');
 			cursors = game.input.keyboard.createCursorKeys();
 		}
 
@@ -71,27 +71,27 @@
 				star.y += 2;
 			});
 
-			if (cursors.left.isDown && player.x == 400 && player.y < 500) {
-				player.x -= 35;
-				stars2.create(360, player.y, 'player');
+			if (cursors.left.isDown && player.x == 370 && player.y < 490) {
+				player.x -= 60;
+				stars2.create(310, player.y, 'player');
 				player.destroy();
-				player = game.add.sprite(400, 600, 'player');
-			} else if (cursors.right.isDown && player.x == 400 && player.y < 500) {
-				player.x += 35;
+				player = game.add.sprite(370, 600, 'player');
+			} else if (cursors.right.isDown && player.x == 370 && player.y < 490) {
+				player.x += 60;
 				stars2.create(430, player.y, 'player');
 				player.destroy();
-				player = game.add.sprite(400, 600, 'player');
+				player = game.add.sprite(370, 600, 'player');
 			}
 
-			if (player.y == -40) {
-				player = game.add.sprite(400, 600, 'player');
+			if (player.y == -120) {
+				player = game.add.sprite(370, 600, 'player');
 			}
 		}
 
 		function gen1() {
 			setTimeout(() => {
-				stars1.create(360, -30, 'star');
-				int1 = Math.floor(Math.random() * (1500 - 300 + 1)) + 300;;
+				stars1.create(310, -30, 'star');
+				int1 = Math.floor(Math.random() * (3000 - 1500 + 1)) + 1500;;
 				gen1();
 			}, int1);
 		}
@@ -99,7 +99,7 @@
 		function gen2() {
 			setTimeout(() => {
 				stars1.create(430, -30, 'star');
-				int2 = Math.floor(Math.random() * (1500 - 300 + 1)) + 300;;
+				int2 = Math.floor(Math.random() * (3000 - 1500 + 1)) + 1500;;
 				gen2();
 			}, int2);
 		}
