@@ -40,6 +40,8 @@
 		var frameTime = 0;
 		var frames;
 		var prevCamX = 0;
+        var floor1, floor2, floor3;
+        var line1;
 
 		function create() {
 
@@ -64,10 +66,25 @@
 
 			player = game.add.sprite(400, 600, 'player');
 
+            floor1 = new Phaser.Rectangle(310, 0, 60, 600);
+            floor2 = new Phaser.Rectangle(370, 0, 60, 600);
+            floor3 = new Phaser.Rectangle(430, 0, 60, 600);
+
+            line1 = new Phaser.Rectangle(370, 500, 60, 10);
+
 			game.camera.follow(player, Phaser.Camera.FOLLOW_LOCKON, 0.1);
 
 			cursors = game.input.keyboard.createCursorKeys();
 		}
+
+        function render () {
+
+            game.debug.geom(floor1,'#555555');
+            game.debug.geom(floor2,'#777777');
+            game.debug.geom(floor3,'#555555');
+            game.debug.geom(line1, '#ffffff');
+
+        }
 
 		function update() {
 			player.y -= 2;
