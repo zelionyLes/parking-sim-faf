@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Phaser - Making your first game, part 1</title>
+    <script type="text/javascript" src="js/phaser.min.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <script type="text/javascript">
+        var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'phaser-example', {
+            preload: preload,
+            create: create,
+            update: update
+        });
+
+        function preload() {
+
+            game.load.image('car1', 'assets/car1.png');
+            game.load.image('car2', 'assets/car2.png');
+            game.load.image('car3', 'assets/car3.png');
+            game.load.image('car4', 'assets/car4.png');
+            game.load.image('prop1', 'assets/prop1.png');
+            game.load.image('prop2', 'assets/prop2.png');
+            game.load.image('prop3', 'assets/prop3.png');
+            game.load.image('prop4', 'assets/prop4.png');
+            game.load.image('prop5', 'assets/prop5.png');
+            game.load.image('prop6', 'assets/prop6.png');
+            game.load.image('bg', 'assets/skarasnaya.png');
+        }
+
+        let cars, props;
+        let intervalLeft = 0,
+            intervalMid = 0,
+            intervalRight = 0,
+            intervalProp = 0;
+        let randProp = game.rnd.integerInRange(1, 3),
+            rnd = randomCar(),
+            rnd1, rnd2;
+        let player1, player2;
+        let score1 = 0,
+            score2 = 0,
+            scoreText1, scoreText2;
+        let cursors, wasd;
+        let crash1, crash2;
+        let speed1 = 2,
+            speed2 = 2;
+        let background;
+        let left, right, middle;
+
+        function create() {
+
+            game.world.setBounds(0, 0, 800, 600);
+            background = game.add.sprite(0, 0, 'bg');
+
+            cars = game.add.group();
+            props = game.add.group();
+            genProps();
+            genLeft();
+            genMid();
+            genRight();
+
+            rnd1 = rnd;
+            rnd2 = rnd;
+
+            scoreText1 = game.add.text(10, 10, "Score: " + score1);
+            scoreText2 = game.add.text(650, 10, "Score: " + score2);
+            player1 = game.add.sprite(300, 600, rnd);
+            player2 = game.add.sprite(440, 600, rnd);
+            cursors = game.input.keyboard.createCursorKeys();
+            wasd = {
+                up: game.input.keyboard.addKey(Phaser.Keyboard.W),
+                down: game.input.keyboard.addKey(Phaser.Keyboard.S),
+                left: game.input.keyboard.addKey(Phaser.Keyboard.A),
+                right: game.input.keyboard.addKey(Phaser.Keyboard.D),
+            };
+        }
+
+        function update() {
+            player1.y -= speed1;
+            player2.y -= speed2;
+            cars.forEach((car) => {
+                if (car.y < 610) {
+                    car.y += 2;
+                }
+            });
+
+            props.forEach((prop) => {
+                if (prop.y < 610) {
+                    prop.y += 2;
+                }
+            });
+
+            if (wasd.left.isDown && player1.x == 300 && player1.y < 400) {
+                player1.x -= 80;
+                cars.forEach((car) => {
+                    if (((player1.y > car.y && player1.y < car.y + car.height) || (player1.y + player1.height > car.y && player1.y + player1.height < car.y + car.height)) && car.x == 230) {
+                        crashHandler1();
+                    }
+                });
+                cars.create(230, player1.y, rnd1);
+                player1.destroy();
+                rnd1 = randomCar();
+                player1 = game.add.sprite(300, 600, rnd1);
+                score1 += 10 * (speed1 - 1);
+                scoreText1.setText("Score: " + score1);
+                if (speed1 < 10) {
+                    speed1++;
+                }
+            } else if (wasd.right.isDown && player1.x == 300 && player1.y < 400) {
+                player1.x += 80;
+                cars.forEach((car) => {
+                    if (((player1.y > car.y && player1.y < car.y + car.height) || (player1.y + player1.height > car.y && player1.y + player1.height < car.y + car.height)) && car.x == 370) {
+                        crashHandler1();
+                    }
+                })
+                cars.create(370, player1.y, rnd1);
+                player1.destroy();
+                rnd1 = randomCar();
+                player1 = game.add.sprite(300, 600, rnd1);
+                score1 += 10 * (speed1 - 1);
+                scoreText1.setText("Score: " + score1);
+                if (speed1 < 10) {
+                    speed1++;
+                }
+            }
+
+            if (player1.y < -210) {
+                player1.destroy();
+                rnd1 = randomCar();
+                player1 = game.add.sprite(300, 600, rnd1);
+            }
+
+            if (cursors.left.isDown && player2.x == 440 && player2.y < 400) {
+                player2.x -= 80;
+                cars.forEach((car) => {
+                    if (((player2.y > car.y && player2.y < car.y + car.height) || (player2.y + player2.height > car.y && player2.y + player2.height < car.y + car.height)) && car.x == 370) {
+                        crashHandler2();
+                    }
+                });
+                cars.create(370, player2.y, rnd2);
+                player2.destroy();
+                rnd2 = randomCar();
+                player2 = game.add.sprite(440, 600, rnd2);
+                score2 += 10 * (speed2 - 1);
+                scoreText2.setText("Score: " + score2);
+                if (speed2 < 10) {
+                    speed2++;
+                }
+            } else if (cursors.right.isDown && player2.x == 440 && player2.y < 400) {
+                player2.x += 80;
+                cars.forEach((car) => {
+                    if (((player2.y > car.y && player2.y < car.y + car.height) || (player2.y + player2.height > car.y && player2.y + player2.height < car.y + car.height)) && car.x == 510) {
+                        crashHandler2();
+                    }
+                })
+                cars.create(510, player2.y, rnd2);
+                player2.destroy();
+                rnd2 = randomCar();
+                player2 = game.add.sprite(440, 600, rnd2);
+                score2 += 10 * (speed2 - 1);
+                scoreText2.setText("Score: " + score2);
+                if (speed2 < 10) {
+                    speed2++;
+                }
+            }
+
+            if (player2.y < -210) {
+                player2.destroy();
+                rnd2 = randomCar();
+                player2 = game.add.sprite(440, 600, rnd2);
+            }
+        }
+
+        function crashHandler1() {
+            if (crash1) {
+                crash1.destroy();
+            }
+            crash1 = game.add.text(20, 200, 'Whoops!');
+            speed1 = 1;
+            setTimeout(() => {
+                crash1.destroy();
+            }, 2000);
+        }
+
+        function crashHandler2() {
+            if (crash2) {
+                crash2.destroy();
+            }
+            crash2 = game.add.text(650, 200, 'Whoops!');
+            speed2 = 1;
+            setTimeout(() => {
+                crash2.destroy();
+            }, 2000);
+        }
+
+        function genLeft() {
+            setTimeout(() => {
+                left = cars.create(230, -210, randomCar());
+                intervalLeft = left.height * 17 + game.rnd.integerInRange(0, 500);
+                genLeft();
+            }, intervalLeft)
+        }
+
+        function genMid() {
+            setTimeout(() => {
+                middle = cars.create(370, -210, randomCar());
+                intervalMid = middle.height * 17 + game.rnd.integerInRange(0, 500);
+                genMid();
+            }, intervalMid)
+        }
+
+        function genRight() {
+            setTimeout(() => {
+                right = cars.create(510, -210, randomCar());
+                intervalRight = right.height * 17 + game.rnd.integerInRange(0, 500);
+                genRight();
+            }, intervalRight)
+        }
+
+        function genProps() {
+            setTimeout(() => {
+                if (randProp == 1) {
+                    props.create(game.rnd.integerInRange(10, 150), -210, randomProp());
+                } else if (randProp == 2) {
+                    props.create(game.rnd.integerInRange(580, 790), -210, randomProp());
+                } else {
+                    props.create(game.rnd.integerInRange(10, 150), -210, randomProp());
+                    props.create(game.rnd.integerInRange(580, 790), -210, randomProp());
+                }
+                randProp = game.rnd.integerInRange(1, 3);
+                intervalProp = game.rnd.integerInRange(0, 500);
+                genProps();
+            }, intervalProp)
+        }
+
+        function randomCar() {
+            return 'car' + game.rnd.integerInRange(1, 4);
+        }
+
+        function randomProp() {
+            return 'prop' + game.rnd.integerInRange(1, 6);
+        }
+    </script>
+
+</body>
+
+</html>
